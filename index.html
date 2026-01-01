@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy New Year 2026</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* STARS */
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: .8;
+    animation: twinkle 3s infinite alternate;
+}
+@keyframes twinkle { from {opacity:.3} to {opacity:1} }
+
+/* TEXT */
+.new-year {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 10;
+    animation: glow 1.5s infinite alternate;
+}
+.new-year h1 { font-size: 4rem; margin: 0; }
+.new-year h2 { font-size: 3rem; color: gold; }
+@keyframes glow {
+    from { text-shadow: 0 0 20px gold; }
+    to { text-shadow: 0 0 60px gold; }
+}
+
+/* ROCKET */
+.rocket {
+    position: absolute;
+    bottom: 0;
+    width: 3px;
+    height: 22px;
+    background: white;
+    box-shadow: 0 0 15px orange;
+    animation: launch 1s linear forwards;
+}
+@keyframes launch { to { transform: translateY(-800px); } }
+
+/* TRAIL */
+.trail {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    animation: fade 0.6s forwards;
+}
+@keyframes fade { to { opacity: 0; transform: scale(2); } }
+
+/* SPARK */
+.spark {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    animation: burst 1.5s forwards;
+}
+@keyframes burst {
+    from { transform: scale(.5); opacity:1 }
+    to { transform: scale(3); opacity:0 }
+}
+</style>
+</head>
+
+<body>
+
+<div class="new-year">
+    <h1>✨ Happy New Year ✨</h1>
+    <h2>🎆 2026 🎆</h2>
+</div>
+
+<script>
+/* STARS */
+for (let i = 0; i < 150; i++) {
+    const s = document.createElement("div");
+    s.className = "star";
+    s.style.left = Math.random()*innerWidth+"px";
+    s.style.top = Math.random()*innerHeight+"px";
+    document.body.appendChild(s);
+}
+
+/* FIREWORK */
+function explode(x, y) {
+    for (let i = 0; i < 60; i++) {   // reduced
+        const c = `hsl(${Math.random()*360},100%,65%)`;
+        const sp = document.createElement("div");
+        sp.className = "spark";
+        sp.style.left = x+"px";
+        sp.style.top = y+"px";
+        sp.style.background = c;
+        sp.style.boxShadow = `0 0 12px ${c}`;
+
+        const a = Math.random()*Math.PI*2;
+        const d = Math.random()*160+40;
+
+        sp.animate([
+            { left:x+"px", top:y+"px" },
+            { left:x+Math.cos(a)*d+"px", top:y+Math.sin(a)*d+"px" }
+        ], { duration:1500 });
+
+        document.body.appendChild(sp);
+        setTimeout(()=>sp.remove(),1500);
+    }
+}
+
+/* ROCKET */
+function launchRocket() {
+    const x = Math.random()*innerWidth;
+    const r = document.createElement("div");
+    r.className = "rocket";
+    r.style.left = x+"px";
+    document.body.appendChild(r);
+
+    let trailTimer = setInterval(()=>{
+        const t = document.createElement("div");
+        t.className="trail";
+        t.style.left = r.offsetLeft+"px";
+        t.style.top = r.offsetTop+"px";
+        t.style.background = "white";
+        document.body.appendChild(t);
+        setTimeout(()=>t.remove(),600);
+    },80); // slower trail
+
+    setTimeout(()=>{
+        clearInterval(trailTimer);
+        explode(x, innerHeight*0.3+100);
+        r.remove();
+    },1000);
+}
+
+/* LIMITED AUTO FIREWORKS */
+setInterval(launchRocket, 900);
+
+/* CLICK FIREWORK */
+document.addEventListener("click", e=>{
+    explode(e.clientX, e.clientY);
+});
+</script>
+
+</body>
+</html>
