@@ -86,29 +86,61 @@ body {
     <h2>🎆 2026 🎆</h2>
 </div>
 
+<!-- AUDIO -->
+<audio id="launchSound" src="fireworks-29629.mp3" preload="auto"></audio>
+<audio id="boomSound" src="fireworks-29629.mp3" preload="auto"></audio>
+
 <script>
+const launchSound = document.getElementById("launchSound");
+const boomSound = document.getElementById("boomSound");
+
+let lastPlayTime = 0;
+const SOUND_DURATION = 3000; // 3 sec sound
+const SOUND_GAP = 2000;      // 2 sec rukna (silence)
+
+/* PLAY SOUND WITH STOP + GAP */
+function playSoundControlled(audio) {
+    const now = Date.now();
+
+    // agar gap ke andar ho to sound mat bajao
+    if (now - lastPlayTime < SOUND_DURATION + SOUND_GAP) return;
+
+    lastPlayTime = now;
+
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play().catch(()=>{});
+
+    setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 0;
+    }, SOUND_DURATION);
+}
+
 /* STARS */
 for (let i = 0; i < 150; i++) {
     const s = document.createElement("div");
     s.className = "star";
-    s.style.left = Math.random()*innerWidth+"px";
-    s.style.top = Math.random()*innerHeight+"px";
+    s.style.left = Math.random() * innerWidth + "px";
+    s.style.top = Math.random() * innerHeight + "px";
     document.body.appendChild(s);
 }
 
 /* FIREWORK */
 function explode(x, y) {
-    for (let i = 0; i < 60; i++) {   // reduced
+    playSoundControlled(boomSound);
+
+    for (let i = 0; i < 60; i++) {
         const c = `hsl(${Math.random()*360},100%,65%)`;
         const sp = document.createElement("div");
         sp.className = "spark";
-        sp.style.left = x+"px";
-        sp.style.top = y+"px";
+        sp.style.left = x + "px";
+        sp.style.top = y + "px";
         sp.style.background = c;
         sp.style.boxShadow = `0 0 12px ${c}`;
 
-        const a = Math.random()*Math.PI*2;
-        const d = Math.random()*160+40;
+        const a = Math.random() * Math.PI * 2;
+        const d = Math.random() * 160 + 40;
 
         sp.animate([
             { left:x+"px", top:y+"px" },
@@ -122,11 +154,13 @@ function explode(x, y) {
 
 /* ROCKET */
 function launchRocket() {
-    const x = Math.random()*innerWidth;
+    const x = Math.random() * innerWidth;
     const r = document.createElement("div");
     r.className = "rocket";
-    r.style.left = x+"px";
+    r.style.left = x + "px";
     document.body.appendChild(r);
+
+    playSoundControlled(launchSound);
 
     let trailTimer = setInterval(()=>{
         const t = document.createElement("div");
@@ -136,7 +170,7 @@ function launchRocket() {
         t.style.background = "white";
         document.body.appendChild(t);
         setTimeout(()=>t.remove(),600);
-    },80); // slower trail
+    },80);
 
     setTimeout(()=>{
         clearInterval(trailTimer);
@@ -145,8 +179,8 @@ function launchRocket() {
     },1000);
 }
 
-/* LIMITED AUTO FIREWORKS */
-setInterval(launchRocket, 900);
+/* AUTO FIREWORKS (slower now) */
+setInterval(launchRocket, 1800);
 
 /* CLICK FIREWORK */
 document.addEventListener("click", e=>{
